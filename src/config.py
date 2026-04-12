@@ -22,6 +22,8 @@ class Config:
     RANDOM_STATE = 42
 
     MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI")
+    MLFLOW_TRACKING_USERNAME = os.getenv("DAGSHUB_USERNAME")
+    MLFLOW_TRACKING_PASSWORD = os.getenv("DAGSHUB_PASSWORD")
     EXPERIMENT_NAME = "credit_card_fraud_detection"
 
     HF_TOKEN = os.getenv("HF_TOKEN")
