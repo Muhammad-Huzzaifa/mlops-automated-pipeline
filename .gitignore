@@ -212,3 +212,5 @@ data/processed/*
 !data/processed/.gitkeep
 models/*
 !models/.gitkeep
+results/*
+!results/.gitkeep
