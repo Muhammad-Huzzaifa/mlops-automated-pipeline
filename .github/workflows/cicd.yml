@@ -13,7 +13,8 @@ jobs:
 
         env:
             MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
-            PYTHONPATH: .
+            MLFLOW_TRACKING_USERNAME: token
+            MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_PAT }}
 
         steps:
             - name: Checkout
@@ -35,7 +36,7 @@ jobs:
 
             - name: Train models
               run: |
-                  python src/train.py
+                  python -m src.train
 
     cd:
         needs: ci
@@ -45,8 +46,9 @@ jobs:
             HF_REPO_ID: ${{ secrets.HF_REPO_ID }}
             HF_TOKEN: ${{ secrets.HF_TOKEN }}
             MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
-            PYTHONPATH: .
-
+            MLFLOW_TRACKING_USERNAME: token
+            MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_PAT }}
+            
         steps:
             - name: Checkout
               uses: actions/checkout@v6.0.2
@@ -63,8 +65,8 @@ jobs:
             
             - name: Retraining models
               run: |
-                  python src/retrain.py
+                  python -m src.retrain
 
             - name: Deploy model
               run: |
-                  python src/deploy.py
+                  python -m src.deploy
