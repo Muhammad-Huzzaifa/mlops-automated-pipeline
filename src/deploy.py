@@ -112,3 +112,7 @@ def deploy():
     deploy_to_huggingface(local_path)
 
     print("Model deployed successfully!")
+
+
+if __name__ == "__main__":
+    deploy()
