@@ -70,7 +70,6 @@ def train():
                     fig = plot_confusion_matrix(y_test, y_pred)
                     fig.savefig(os.path.join(Config.RESULTS_DIR, "confusion_matrix.png"))
                     mlflow.log_figure(fig, os.path.join(Config.RESULTS_DIR, "confusion_matrix.png"))
-                    os.remove(os.path.join(Config.RESULTS_DIR, "confusion_matrix.png"))
 
                     # log model
                     mlflow.sklearn.log_model(model, "model")
@@ -81,7 +80,6 @@ def train():
         fig = plot_model_comparison(results)
         fig.savefig(os.path.join(Config.RESULTS_DIR, "model_comparison.png"))
         mlflow.log_figure(fig, os.path.join(Config.RESULTS_DIR, "model_comparison.png"))
-        os.remove(os.path.join(Config.RESULTS_DIR, "model_comparison.png"))
 
 
 if __name__ == "__main__":

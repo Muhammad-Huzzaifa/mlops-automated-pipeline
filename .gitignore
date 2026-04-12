@@ -206,10 +206,7 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-data/raw/*
-!data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
+
 models/*
 !models/.gitkeep
 results/*
