@@ -11,6 +11,7 @@ from src.config import Config
 from src.data_loader import DataLoader
 from src.models import get_param_grid, build_model
 from src.evaluate import evaluate_model, plot_confusion_matrix, plot_model_comparison
+from src.registry import promote_best_model
 
 
 def train():
@@ -80,6 +81,8 @@ def train():
         fig = plot_model_comparison(results)
         fig.savefig(os.path.join(Config.RESULTS_DIR, "model_comparison.png"))
         mlflow.log_figure(fig, os.path.join(Config.RESULTS_DIR, "model_comparison.png"))
+
+    promote_best_model()
 
 
 if __name__ == "__main__":
