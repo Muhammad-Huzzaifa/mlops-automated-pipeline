@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 from src.config import Config
 from src.data_loader import DataLoader
 from src.models import get_param_grid, build_model
-from src.evaluate import evaluate_model, plot_confusion_matrix, plot_comparison
+from src.evaluate import evaluate_model, plot_confusion_matrix, plot_model_comparison
 
 
 def train():
@@ -78,7 +78,7 @@ def train():
                     results[run_name] = metrics
         
         # log comparison plot
-        fig = plot_comparison(results)
+        fig = plot_model_comparison(results)
         fig.savefig(os.path.join(Config.RESULTS_DIR, "model_comparison.png"))
         mlflow.log_figure(fig, os.path.join(Config.RESULTS_DIR, "model_comparison.png"))
         os.remove(os.path.join(Config.RESULTS_DIR, "model_comparison.png"))
