@@ -17,8 +17,18 @@ def promote_best_model():
 
     exp = client.get_experiment_by_name(Config.EXPERIMENT_NAME)
     runs = client.search_runs(exp.experiment_id)
-
-    best_run = max(runs, key=lambda x: x.data.metrics["accuracy"])
+    valid_runs = [
+        run for run in runs
+        if "accuracy" in run.data.metrics
+        and "mlflow.parentRunId" in run.data.tags
+    ]
+    if not valid_runs:
+        raise Exception("No valid child runs with accuracy found.")
+    
+    best_run = max(valid_runs, key=lambda x: x.data.metrics["accuracy"])
+    best_accuracy = best_run.data.metrics["accuracy"]
+    print(f"Best run ID: {best_run.info.run_id}")
+    print(f"Best accuracy: {best_accuracy}")
 
     model_uri = f"runs:/{best_run.info.run_id}/model"
 
@@ -33,5 +43,6 @@ def promote_best_model():
         version=latest.version,
         stage="Production"
     )
+    print(f"Model version {latest.version} promoted to Production") 
 
     return model_uri

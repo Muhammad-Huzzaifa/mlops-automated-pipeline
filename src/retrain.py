@@ -7,7 +7,6 @@ import pandas as pd
 from src.data_loader import DataLoader
 from src.drift import detect_drift
 from src.train import train
-from src.registry import promote_best_model
 
 
 def retrain():
@@ -34,7 +33,6 @@ def retrain():
     loader.save_processed_data(updated, "processed.csv")
 
     train()
-    promote_best_model()
 
 
 if __name__ == "__main__":

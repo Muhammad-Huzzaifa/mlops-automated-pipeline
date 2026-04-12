@@ -29,6 +29,6 @@ class Config:
     HF_TOKEN = os.getenv("HF_TOKEN")
     HF_REPO_ID = os.getenv("HF_REPO_ID")
 
-    DRIFT_THRESHOLD = 2
+    DRIFT_THRESHOLD = 1
     DRIFT_DETECTING_COLUMNS = ['amt', 'city_pop', 'age', 'distance', 'hour', 'month']
     CRITICAL_COLUMNS = ['amt', 'distance']
