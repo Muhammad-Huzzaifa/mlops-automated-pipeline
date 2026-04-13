@@ -24,17 +24,37 @@ def get_production_model_uri(model_name: str) -> str:
 
     client = MlflowClient()
 
-    versions = client.get_latest_versions(
-        name=model_name,
-        stages=["Production"]
+    versions = client.search_model_versions(f"name='{model_name}'")
+    if not versions:
+        raise Exception(f"No registered versions found for model '{model_name}'.")
+
+    production_versions = [v for v in versions if v.current_stage == "Production"]
+    ordered_versions = sorted(
+        versions,
+        key=lambda v: int(v.version),
+        reverse=True,
     )
 
-    if not versions:
-        raise Exception("No model found in Production stage.")
+    seen = set()
+    candidate_versions = []
+    for v in production_versions + ordered_versions:
+        if v.version in seen:
+            continue
+        seen.add(v.version)
+        candidate_versions.append(v)
 
-    version = versions[0]
+    for version in candidate_versions:
+        model_uri = f"models:/{model_name}/{version.version}"
+        try:
+            mlflow.sklearn.load_model(model_uri)
+            return model_uri
+        except Exception:
+            continue
 
-    return f"models:/{model_name}/{version.version}"
+    raise Exception(
+        f"No deployable version found for '{model_name}'. "
+        "All candidate versions failed to load from MLflow artifacts."
+    )
 
 
 def load_model_from_mlflow(model_uri: str):
@@ -100,6 +120,8 @@ def deploy():
     """
 
     MODEL_NAME = "fraud_model"
+
+    mlflow.set_tracking_uri(Config.MLFLOW_TRACKING_URI)
 
     model_uri = get_production_model_uri(MODEL_NAME)
     print(f"Using model from: {model_uri}")
