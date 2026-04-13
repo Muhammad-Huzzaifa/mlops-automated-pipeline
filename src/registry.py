@@ -16,12 +16,25 @@ def promote_best_model():
     client = MlflowClient()
 
     exp = client.get_experiment_by_name(Config.EXPERIMENT_NAME)
-    runs = client.search_runs(exp.experiment_id)
-    valid_runs = [
-        run for run in runs
-        if "accuracy" in run.data.metrics
-        and "mlflow.parentRunId" in run.data.tags
-    ]
+    runs = client.search_runs(
+        experiment_ids=[exp.experiment_id],
+        filter_string="attributes.status = 'FINISHED'"
+    )
+
+    valid_runs = []
+    for run in runs:
+        if "accuracy" not in run.data.metrics:
+            continue
+        if "mlflow.parentRunId" not in run.data.tags:
+            continue
+
+        artifacts = client.list_artifacts(run.info.run_id)
+        artifact_paths = [a.path for a in artifacts]
+        if "model" not in artifact_paths:
+            continue
+        
+        valid_runs.append(run)
+
     if not valid_runs:
         raise Exception("No valid child runs with accuracy found.")
     
@@ -34,15 +47,13 @@ def promote_best_model():
 
     model_name = "fraud_model"
 
-    mlflow.register_model(model_uri, model_name)
-
-    latest = client.get_latest_versions(model_name)[-1]
+    result = mlflow.register_model(model_uri, model_name)
 
     client.transition_model_version_stage(
         name=model_name,
-        version=latest.version,
+        version=result.version,
         stage="Production"
     )
-    print(f"Model version {latest.version} promoted to Production") 
+    print(f"Model version {result.version} promoted to Production") 
 
     return model_uri
