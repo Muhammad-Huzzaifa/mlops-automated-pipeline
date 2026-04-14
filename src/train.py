@@ -3,6 +3,7 @@ Training pipeline with parameterized experiments.
 """
 
 import os
+import tempfile
 import mlflow
 import mlflow.sklearn
 from sklearn.model_selection import train_test_split
@@ -72,8 +73,11 @@ def train():
                     fig.savefig(os.path.join(Config.RESULTS_DIR, "confusion_matrix.png"))
                     mlflow.log_figure(fig, os.path.join(Config.RESULTS_DIR, "confusion_matrix.png"))
 
-                    # log model
-                    mlflow.sklearn.log_model(model, "model")
+                    # log model artifacts explicitly so registry/deploy can load from runs:/.../model
+                    with tempfile.TemporaryDirectory() as tmp_dir:
+                        local_model_dir = os.path.join(tmp_dir, "model")
+                        mlflow.sklearn.save_model(model, local_model_dir)
+                        mlflow.log_artifacts(local_model_dir, artifact_path="model")
 
                     results[run_name] = metrics
         

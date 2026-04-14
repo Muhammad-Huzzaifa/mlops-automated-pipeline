@@ -58,6 +58,11 @@ def promote_best_model():
 
         try:
             print(f"Trying run ID: {run_id} (accuracy={run_accuracy})")
+
+            model_artifacts = client.list_artifacts(run_id, path="model")
+            if not model_artifacts:
+                raise Exception("No 'model' artifacts found under this run")
+
             try:
                 result = mlflow.register_model(model_uri, model_name)
             except MlflowException as exc:
