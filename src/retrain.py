@@ -16,9 +16,19 @@ def retrain():
 
     loader = DataLoader()
 
-    old_data = loader.load_processed_data("processed.csv")
+    try:
+        old_data = loader.load_processed_data("processed.csv")
+    except FileNotFoundError:
+        old_raw = loader.load_raw_data("dataset.csv")
+    
+    old_data = loader.preprocess(old_raw)
 
-    new_raw = loader.load_raw_data("incoming.csv")
+    try:
+        new_raw = loader.load_raw_data("incoming.csv")
+    except FileNotFoundError:
+        print("No new data found. Skipping retraining.")
+        return
+    
     new_data = loader.preprocess(new_raw)
 
     drift = detect_drift(old_data, new_data)
